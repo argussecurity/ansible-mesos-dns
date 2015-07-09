@@ -1,2 +1,7 @@
 ---
-# handlers file for ansible-mesos-dns
+# Handlers for ansible-mesos-dns
+
+#TODO(jdef) don't hardcode eth0
+- name: restart dhclient
+  sudo: yes
+  shell: dhclient -r -pf /run/dhclient.eth0.pid && sudo ifdown eth0 && sudo ifup eth0

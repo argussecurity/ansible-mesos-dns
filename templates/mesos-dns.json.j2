@@ -1,0 +1,8 @@
+{
+  "cmd": "chmod +x {{ ansible_env.HOME }}/pkg/src/github.com/mesosphere/mesos-dns/mesos-dns && sudo {{ ansible_env.HOME }}/pkg/src/github.com/mesosphere/mesos-dns/mesos-dns -config={{ ansible_env.HOME }}/mesos-dns-config.json",
+  "cpus": 0.1,
+  "mem": 64,
+  "id": "mesos-dns",
+  "instances": 1,
+  "constraints": [["hostname", "CLUSTER", "{{ inventory_hostname }}"]]
+}

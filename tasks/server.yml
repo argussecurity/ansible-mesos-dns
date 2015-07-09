@@ -1,0 +1,53 @@
+---
+# Playbook to install mesos-dns services on a Mesos master node
+- name: Checking prerequisite packages
+  apt: name=git-core state=present
+  sudo: yes
+
+- name: Checking for Go binaries
+  command: test -x {{ ansible_env.HOME }}/go/bin/go
+  register: go_installed
+  ignore_errors: True
+
+- name: Installing Go
+  shell: curl -s https://storage.googleapis.com/golang/go1.4.linux-amd64.tar.gz | tar xzf - -C {{ ansible_env.HOME }}
+  when: go_installed|failed
+
+# see https://github.com/mesosphere/mesos-dns/issues/171#issuecomment-111593961 (this doesn't create a link in pkg/bin/mesos-dns
+- name: Checking for mesos-dns binaries
+  command: test -x {{ ansible_env.HOME }}/pkg/src/github.com/mesosphere/mesos-dns/mesos-dns
+  register: mdns_installed
+  ignore_errors: True
+
+# see https://github.com/mesosphere/mesos-dns/issues/171#issuecomment-111593961
+- name: Building mesos-dns binaries
+  shell: mkdir -p {{ ansible_env.HOME }}/pkg && go get github.com/miekg/dns && go get github.com/tools/godep && go get -d github.com/mesosphere/mesos-dns && cd {{ ansible_env.HOME }}/pkg/src/github.com/mesosphere/mesos-dns/ && make
+  environment:
+    PATH: "{{ ansible_env.HOME }}/go/bin:{{ ansible_env.HOME }}/pkg/bin:/usr/local/bin:/usr/bin:/bin"
+    GOPATH: "{{ ansible_env.HOME }}/pkg"
+    GOROOT: "{{ ansible_env.HOME }}/go"
+  when: mdns_installed|failed
+
+#TODO(jdef) once mesos-dns supports ZK detection we can check for /etc/mesos/zk
+
+- name: Examining host IP configuration
+  shell: ip -o -f inet addr show
+           $(ip route | grep -e ^default.via | sed -e 's/.*dev //g') |
+           head -1 | awk '{ print $4; }' | cut -f1 -d/
+  register: servicehost
+
+- set_fact:
+    servicehost: "{{ servicehost }}"
+
+- set_fact:
+    mesos_master: "{{ mesos_masters[0] }}"
+
+- name: Configuring mesos-dns
+  template: src=config.json.j2 dest={{ ansible_env.HOME }}/mesos-dns-config.json mode=0644
+
+- name: Generating Marathon deployment descriptor
+  template: src=mesos-dns.json.j2 dest={{ ansible_env.HOME }}/mesos-dns-app.json mode=0644
+
+- name: Updating mesos-dns application deployment in Marathon
+  shell: >
+    curl -s -XPUT -H"Content-Type: application/json" http://{{ mesos_master }}:{{ marathon_port }}/v2/apps/mesos-dns -d@{{ ansible_env.HOME }}/mesos-dns-app.json
