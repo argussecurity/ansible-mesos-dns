@@ -1,4 +1,4 @@
 ---
 # tasks file for ansible-mesos-dns
 
-- include: {{ mesos_dns_install_mode }}.yml
+- include: "{{ mesos_dns_install_mode }}.yml"
