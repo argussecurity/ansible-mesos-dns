@@ -1,10 +1,10 @@
 {
-  "masters": ["{{ mesos_master }}:5050"],
+  "zk": "zk://{{ zk }}/mesos"
   "refreshSeconds": 60,
   "ttl": 60,
   "domain": "mesos",
   "port": 53,
-  "resolvers": ["172.31.0.2", "8.8.8.8"],
+  "resolvers": ["8.8.8.8"],
   "timeout": 5,
   "email": "root.mesos-dns.mesos"
 }

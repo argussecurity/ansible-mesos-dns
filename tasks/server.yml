@@ -39,9 +39,6 @@
 - set_fact:
     servicehost: "{{ servicehost }}"
 
-- set_fact:
-    mesos_master: "{{ mesos_masters[0] }}"
-
 - name: Configuring mesos-dns
   template: src=config.json.j2 dest={{ ansible_env.HOME }}/mesos-dns-config.json mode=0644
 
@@ -50,4 +47,4 @@
 
 - name: Updating mesos-dns application deployment in Marathon
   shell: >
-    curl -s -XPUT -H"Content-Type: application/json" http://{{ mesos_master }}:{{ marathon_port }}/v2/apps/mesos-dns -d@{{ ansible_env.HOME }}/mesos-dns-app.json
+    curl -s -XPUT -H"Content-Type: application/json" http://{{ marathon }}/v2/apps/mesos-dns -d@{{ ansible_env.HOME }}/mesos-dns-app.json
