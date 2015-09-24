@@ -1,32 +1,13 @@
 ---
-# Playbook to install mesos-dns services on a Mesos master node
-- name: Checking prerequisite packages
-  apt: name=git-core state=present
-  sudo: yes
+- name: Download mesos-dns release
+  get_url: url="{{ mesos_dns_release_path }}"
+           dest="/usr/local/mesos-dns.gz"
 
-- name: Checking for Go binaries
-  command: test -x {{ ansible_env.HOME }}/go/bin/go
-  register: go_installed
-  ignore_errors: True
+- name: Extract mesos-dns release
+  command: gzip -d -f /usr/local/mesos-dns.gz
 
-- name: Installing Go
-  shell: curl -s https://storage.googleapis.com/golang/go1.4.linux-amd64.tar.gz | tar xzf - -C {{ ansible_env.HOME }}
-  when: go_installed|failed
-
-# see https://github.com/mesosphere/mesos-dns/issues/171#issuecomment-111593961 (this doesn't create a link in pkg/bin/mesos-dns
-- name: Checking for mesos-dns binaries
-  command: test -x {{ ansible_env.HOME }}/pkg/src/github.com/mesosphere/mesos-dns/mesos-dns
-  register: mdns_installed
-  ignore_errors: True
-
-# see https://github.com/mesosphere/mesos-dns/issues/171#issuecomment-111593961
-- name: Building mesos-dns binaries
-  shell: mkdir -p {{ ansible_env.HOME }}/pkg && go get github.com/miekg/dns && go get github.com/tools/godep && go get -d github.com/mesosphere/mesos-dns && cd {{ ansible_env.HOME }}/pkg/src/github.com/mesosphere/mesos-dns/ && make
-  environment:
-    PATH: "{{ ansible_env.HOME }}/go/bin:{{ ansible_env.HOME }}/pkg/bin:/usr/local/bin:/usr/bin:/bin"
-    GOPATH: "{{ ansible_env.HOME }}/pkg"
-    GOROOT: "{{ ansible_env.HOME }}/go"
-  when: mdns_installed|failed
+- name: Add execution permission to mesos-dns
+  file: path=/usr/local/mesos-dns state=file mode="u+x,g+x"
 
 #TODO(jdef) once mesos-dns supports ZK detection we can check for /etc/mesos/zk
 

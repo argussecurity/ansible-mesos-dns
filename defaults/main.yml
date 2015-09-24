@@ -1,6 +1,7 @@
 ---
 # defaults file for ansible-mesos-dns
 mesos_dns_install_mode: client
+mesos_dns_release_path: https://github.com/mesosphere/mesos-dns/releases/download/v0.3.0/mesos-dns-v0.3.0-linux-amd64.gz
 marathon: localhost:8080
 dns_host: 127.0.0.1
 zk: localhost:2181

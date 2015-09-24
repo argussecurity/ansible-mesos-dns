@@ -16,6 +16,7 @@ Role Variables
 --------------
 
 - `mesos_dns_install_mode` should be `server` or `client`
+- `mesos_dns_release_path` a path to mesos-dns binary
 - `zk` comma separated list of Zookeeper host:port to monitor and detect Mesos masters, used in `server` setup
 - `marathon` defaults to localhost:8080
 - `dns_host` used in `client` setup to configure the dns server address
