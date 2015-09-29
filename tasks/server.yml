@@ -15,13 +15,13 @@
 
 # see https://github.com/mesosphere/mesos-dns/issues/171#issuecomment-111593961 (this doesn't create a link in pkg/bin/mesos-dns
 - name: Checking for mesos-dns binaries
-  command: test -x {{ ansible_env.HOME }}/pkg/src/github.com/mesosphere/mesos-dns/mesos-dns
+  command: test -x {{ ansible_env.HOME }}/pkg/src/github.com/argussecurity/mesos-dns/mesos-dns
   register: mdns_installed
   ignore_errors: True
 
 # see https://github.com/mesosphere/mesos-dns/issues/171#issuecomment-111593961
 - name: Building mesos-dns binaries
-  shell: mkdir -p {{ ansible_env.HOME }}/pkg && go get github.com/miekg/dns && go get github.com/tools/godep && go get -d github.com/mesosphere/mesos-dns && cd {{ ansible_env.HOME }}/pkg/src/github.com/mesosphere/mesos-dns/ && make
+  shell: mkdir -p {{ ansible_env.HOME }}/pkg && go get github.com/miekg/dns && go get github.com/tools/godep && go get -d github.com/argussecurity/mesos-dns && cd {{ ansible_env.HOME }}/pkg/src/github.com/argussecurity/mesos-dns/ && make
   environment:
     PATH: "{{ ansible_env.HOME }}/go/bin:{{ ansible_env.HOME }}/pkg/bin:/usr/local/bin:/usr/bin:/bin"
     GOPATH: "{{ ansible_env.HOME }}/pkg"
