@@ -1,7 +1,7 @@
 ansible-mesos-dns
 =========
 
-Ansible role for installing and configuring mesos-dns in the cluster. Can choose either `server` or `client` setup.
+Ansible role for installing and configuring mesos-dns in the cluster. Can choose either `server` (NOT MAINTAINED, at the moment) or `client` setup.
 
 Mesos-dns is deployed on Marathon, assuming it is run on Mesos master machine.
 
@@ -15,7 +15,7 @@ None.
 Role Variables
 --------------
 
-- `mesos_dns_install_mode` should be `server` or `client`
+- `mesos_dns_install_mode` should be `server` (NOT MAINTAINED, at the moment) or `client`
 - `zk` comma separated list of Zookeeper host:port to monitor and detect Mesos masters, used in `server` setup
 - `marathon` defaults to localhost:8080
 - `dns_host` used in `client` setup to configure the dns server address
