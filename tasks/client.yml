@@ -2,7 +2,17 @@
 ---
 
 - name: Resolving DNS server IP
-  shell: for HOST in {{ dns_hosts }}; do IP=$(ping -c 1 $HOST | grep -ohE "\(([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\)" | head -1 | sed "s/[()]//g"); printf $IP; printf " "; done
+  shell: |
+         DNS_SERVERS=""
+         for HOST in {{ dns_hosts }}; do
+           IP=$(ping -c 1 $HOST | grep -ohE "\(([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\)" | head -1 | sed "s/[()]//g")
+           if [ "$DNS_SERVERS" = "" ]; then
+             DNS_SERVERS="$IP"
+           else
+             DNS_SERVERS="$DNS_SERVERS,$IP"
+           fi
+         done
+         echo $DNS_SERVERS
   register: dns_servers_ips
 
 - name: Configuring dhclient for mesos-dns
