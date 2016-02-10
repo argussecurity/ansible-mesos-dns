@@ -2,11 +2,11 @@
 ---
 
 - name: Resolving DNS server IP
-  shell: ping -c 1 {{ dns_host }} | grep -ohE "\(([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\)" | head -1 | sed "s/[()]//g"
-  register: dns_server_ip
+  shell: for HOST in {{ dns_hosts }}; do IP=$(ping -c 1 $HOST | grep -ohE "\(([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\)" | head -1 | sed "s/[()]//g"); printf $IP; printf " "; done
+  register: dns_servers_ips
 
 - name: Configuring dhclient for mesos-dns
   sudo: yes
-  lineinfile: dest=/etc/dhcp/dhclient.conf regexp='^prepend domain-name-servers ' line='prepend domain-name-servers {{ dns_server_ip.stdout }};'
+  lineinfile: dest=/etc/dhcp/dhclient.conf regexp='^prepend domain-name-servers ' line='prepend domain-name-servers {{ dns_servers_ips.stdout }};'
   notify:
     - restart dhclient

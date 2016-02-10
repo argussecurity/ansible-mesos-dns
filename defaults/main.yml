@@ -2,5 +2,5 @@
 # defaults file for ansible-mesos-dns
 mesos_dns_install_mode: client
 marathon: localhost:8080
-dns_host: 127.0.0.1
+dns_hosts: 127.0.0.1
 zk: localhost:2181
