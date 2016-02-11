@@ -1,6 +1,8 @@
 # Playbook for mesos-dns clients
 ---
 
+# TODO: don't override existing DNS server
+# TODO: `grep nameserver /etc/resolv.conf | head -1 | awk '{print $2}'` returns the existing one
 - name: Resolving DNS server IP
   shell: |
          DNS_SERVERS=""
